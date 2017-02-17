@@ -40,7 +40,6 @@ public class NeuralNetwork
         this.OutputLayerSize = HiddenLayerNum;
         this.HiddenLayerNum = HiddenLayerSize;
         
-        
         // creating the Required amount of matrixes for the Weights
         
         
@@ -135,6 +134,7 @@ public class NeuralNetwork
         {
             for(j=0;j < InputLayerSize;j++)
             {
+                // computing the sum of inputs multiplied by weights
                 zin[i] += Input[j]*ILWeights[i][j];
             }
             // activation function
@@ -143,10 +143,32 @@ public class NeuralNetwork
         
         
         // cicle to propagate between the Hidden Layers if any
-        
-        
-        // activation function
-        
+        if(HiddenLayerFlag)
+        {
+            // i is the HiddenLayer index we are computing
+            for(i=0;i < HiddenLayerNum-1;i++)
+            {
+                // j is the Index for the node we are calculating
+                for(j=0;j < HiddenLayerSize;i++)
+                {
+                    // k is the Index for the input we are processing
+                    for(k=0;k < HiddenLayerSize;k++)
+                    {
+                        if(i==0)
+                        {
+                            zhidden[i][j] += ain[k]*HLWeights[i][k][j];
+                        }
+                        else
+                        {
+                            zhidden[i][j] += ahidden[i-1][j]*HLWeights[i][k][j];
+                        }
+                    }
+                }
+                //activation function
+                ahidden[i][j] = activation(zhidden[i][j]);
+            }
+            
+        }
         
         // Multiplying the input by the output Layer Weights
         for(i=0;i < OutputLayerSize;i++)
@@ -155,7 +177,7 @@ public class NeuralNetwork
             {
                 if(HiddenLayerFlag)
                 {
-                     zout[i] += ahidden[HiddenLayerNum-1][j]*OLWeights[i][j];
+                     zout[i] += ahidden[HiddenLayerNum-2][j]*OLWeights[i][j];
                 }
                 else
                 {
@@ -165,8 +187,8 @@ public class NeuralNetwork
             // activation function
             ain[i] = activation(zin[i]);
         }
-        //activation function
-        
+       
+        // Calculations Done
         return aout;
     }
     
